@@ -5,7 +5,6 @@ export default function Home() {
 
   return (
    <section className='h-100'>
-    <h2>Donut Shop</h2>
     <div 
     className='box'>
 <Donut />
