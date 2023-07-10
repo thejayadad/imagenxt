@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: monospace;
+}
+.box{
+  margin: 20px auto;
+  columns: 4;
+}
