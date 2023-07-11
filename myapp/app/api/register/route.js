@@ -1,6 +1,6 @@
 import db from "@/lib/db";
 import bcrypt from 'bcrypt'
-import User from '@/models/User'
+import User from "@/models/User";
 
 export async function POST(req){
     try {

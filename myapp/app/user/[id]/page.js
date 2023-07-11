@@ -2,19 +2,26 @@
 
 import React, { useState, useEffect } from "react";
 import UserCard from "@/components/UserCard";
+import { useSession } from "next-auth/react";
+import Donut from "@/components/Donut";
 
 const UserPage = ({params}) => {
     const [userDonut, setUserDonut] = useState([]);
+    const { data: session } = useSession();
+
 
     useEffect(() => {
         const fetchDonuts = async () => {
           const response = await fetch(`/api/user/${params.id}`);
           const data = await response.json();
-    
+      
           setUserDonut(data);
         };
-    
-      }, []);
+      
+        if (session?.user.id && params.id) fetchDonuts();
+      
+      }, [session, params.id]);
+      
 
   return (
     <section>
@@ -25,7 +32,7 @@ const UserPage = ({params}) => {
           </h3>
         ) : (
           userDonut.map((donut) => (
-            <UserCard {...donut} />
+            <Donut {...donut} />
           ))
         )}
     </section>

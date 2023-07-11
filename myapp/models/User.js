@@ -11,6 +11,9 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    creator: {
+      type: String,
+  },
     password: {
         type: String,
         required: true,
@@ -27,21 +30,11 @@ const UserSchema = new mongoose.Schema({
           }
         }
       ],
-      following: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          default: [],
-        }
-      ],
-      followers: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          default: [],
+      friends: {
+        type: Array,
+        default: [],
+      },
 
-        }
-    ]
 }, {timestamps: true})
 
 export default mongoose?.models?.User || mongoose.model("User", UserSchema)
