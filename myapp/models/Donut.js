@@ -16,9 +16,9 @@ const DonutSchema = new mongoose.Schema({
         enum: [
             'Custom',
             'Hot',
-            'CreameFilled',
+            'Creame Filled',
             'Sprinkle',
-            'CakeStyle',
+            'Cake Style',
         ]
     },
     authorId: {

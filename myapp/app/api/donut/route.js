@@ -2,7 +2,7 @@ import db from "@/lib/db";
 import { verifyJwtToken, verifyToken } from '@/lib/jwt'
 import Donut from "@/models/Donut";
 
-export async function GET(req) {
+export async function GET(request) {
     await db.connect()
 
     try {

@@ -1,26 +1,27 @@
 
+"use client";
 
 import DonutCard from "@/components/DonutCard"
+import { useSession } from "next-auth/react";
+import DountHome from "@/components/DonutHome";
 
 
-export async function fetchDonuts(){
-  const res = await fetch('http://localhost:3000/api/donut', {cache: 'no-store'})
-
-  return res.json()
-}
 
 
-export default  async function Home() { 
-  const donuts = await fetchDonuts()
+export default  function Home() { 
+  const { data: session } = useSession();
 
   return (
     <main>
       <h2>Doonuts</h2>
      <div>
-      {donuts?.length > 0 
-       ? donuts.map((donut) => (
-        <DonutCard key={donut._id} donut={donut}/>
-      )) : <h3 className={classes.noBlogs}>No blogs are currently in the</h3>}
+      {session?.user.id ? (
+        <DountHome  />
+      ) : (
+        <span>No Post</span>
+      )
+      
+      }
      </div>
     </main>
   )

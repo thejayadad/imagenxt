@@ -13,7 +13,7 @@ const CreateDonut = () => {
     const UPLOAD_PRESET = 'donut_shop'
     const [title, setTitle] = useState('')
     const [category, setCategory] = useState("")
-    const [photo, setPhoto] = useState(null)
+    const [photo, setPhoto] = useState('')
 
     const { data: session, status } = useSession()
     const router = useRouter()
@@ -93,9 +93,9 @@ const CreateDonut = () => {
                     <select value={category} onChange={(e) => setCategory(e.target.value)}>
                         <option value="Custom">Custom</option>
                         <option value="Hot">Hot</option>
-                        <option value="CreameFilled">Creame Filled</option>
+                        <option value="Creame Filled">Creame Filled</option>
                         <option value="Sprinkle">Sprinkle</option>
-                        <option value="CakeStyle">Cake Style</option>
+                        <option value="Cake Style">Cake Style</option>
                     </select>
                     <label htmlFor='image'>
                         Upload Image <AiOutlineFileImage />
