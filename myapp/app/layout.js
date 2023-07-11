@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar'
 import './globals.css'
-
+import Provider from '@/SessionProvider'
 
 export const metadata = {
   title: 'Donut Shop',
@@ -11,10 +11,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className='max-w-screen-xl m-auto'>
-        <Navbar />
+      <Provider>              
+      <Navbar />
         {children}
-        
-        </body>
+      </Provider>        
+      </body>
     </html>
   )
 }

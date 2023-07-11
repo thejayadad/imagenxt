@@ -1,0 +1,20 @@
+import db from "@/lib/db";
+import { verifyJwtToken } from "@/lib/jwt";
+import User from "@/models/User";
+
+import Donut from "@/models/Donut";
+
+
+export const GET = async (request, { params }) => {
+    try {
+      await connectToDB();
+  
+      const userDonuts = await Donut.find({ creator: params.id }).sort({
+        createAt: -1,
+      });
+  
+      return new Response(JSON.stringify(userPromps), { status: 200 });
+    } catch (error) {
+      return new Response("Failed to fetch all prompts", { status: 500 });
+    }
+  };

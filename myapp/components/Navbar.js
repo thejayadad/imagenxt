@@ -6,7 +6,7 @@ const Navbar = () => {
     <section>
         <div className="navbar bg-base-100">
   <div className="flex-1">
-    <a className="btn btn-ghost normal-case text-xl">Donut Spot</a>
+    <a className="btn btn-ghost normal-case text-xl text-white bg-primary text-center">Donut Spot</a>
   </div>
   <div className="flex-none gap-2">
   <Link href={'/create-donut'} className="btn btn-active btn-primary text-white">CREATE</Link>
