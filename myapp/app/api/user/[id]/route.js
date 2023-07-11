@@ -9,7 +9,7 @@ export const GET = async (request, { params }) => {
     try {
       await db.connect();  
   
-      const userDonuts = await Donut.find({ author: params.id }).sort({
+      const userDonuts = await Donut.find({ creator: params.id }).sort({
         createAt: -1,
       });
   

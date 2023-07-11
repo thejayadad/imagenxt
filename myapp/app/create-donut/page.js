@@ -41,7 +41,7 @@ const CreateDonut = () => {
                'Authorization': `Bearer ${session?.user?.accessToken}` 
             },
             method: 'POST',
-            body: JSON.stringify({title,imageUrl,authorId: session?.user?._id, creator: session?.user._id})
+            body: JSON.stringify({title,imageUrl,authorId: session?.user?._id, creator: authorId})
           })
 
           if(!res.ok){
