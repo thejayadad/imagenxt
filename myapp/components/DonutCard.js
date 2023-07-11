@@ -18,7 +18,13 @@ const DonutCard = ({ donut: { title, imageUrl, authorId, _id, category } }) => {
         width={400}
         src={imageUrl}
         />
-        <span>Arthor: {authorId.username}</span>
+        <span>Arthor: 
+            <a
+            href={`/user/${_id}`}
+            >
+            {authorId.username}
+            </a>
+        </span>
         <h3>{category}</h3>
     </div>
   )

@@ -6,7 +6,7 @@ export async function GET(req) {
     await db.connect()
 
     try {
-        const donuts = await Donut.find({}).limit(16)
+        const donuts = await Donut.find({}).populate('authorId')
         return new Response(JSON.stringify(donuts), { status: 200 })
     } catch (error) {
         return new Response(JSON.stringify(null), { status: 500 })
