@@ -1,52 +1,71 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import db from "@/lib/db";
+import { signJwtToken } from "@/lib/jwt";
+
 
 const handler = NextAuth({
-    providers: [
+  providers: [
       CredentialsProvider({
-        id: "credentials",
-        name: "Credentials",
-        async authorize(credentials) {
-          //Check if the user exists.
-          await db.connect();
-  
-          try {
-            const user = await User.findOne({
-              email: credentials.email,
-            });
-  
-            if (user) {
-              const isPasswordCorrect = await bcrypt.compare(
-                credentials.password,
-                user.password
-              );
-  
-              if (isPasswordCorrect) {
-                return user;
-              } else {
-                throw new Error("Wrong Credentials!");
+          type: 'credentials',
+          credentials: {
+              username: {label: 'Email', type: 'text', placeholder: 'John Doe'},
+              password: {label: 'Password', type: 'password'}
+          },
+          async authorize(credentials, req){
+              const {email, password} = credentials
+
+              await db.connect()
+                              
+              const user = await User.findOne({ email })
+
+              if(!user){
+                  throw new Error("Invalid input")
               }
-            } else {
-              throw new Error("User not found!");
-            }
-          } catch (err) {
-            throw new Error(err);
+
+              // 2 parameters -> 
+              // 1 normal password -> 123123
+              // 2 hashed password -> dasuytfygdsaidsaugydsaudsadsadsauads
+              const comparePass = await bcrypt.compare(password, user.password)
+
+              if(!comparePass){
+                  throw new Error("Invalid input")
+              } else {
+                  const {password, ...currentUser} = user._doc
+
+                  const accessToken = signJwtToken(currentUser, {expiresIn: '6d'})
+
+                  return {
+                      ...currentUser,
+                      accessToken
+                  }
+              }
           }
-        },
-      }),
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      }),
-    ],
-    pages: {
-      error: "/login",
-    },
-  
-  });
-  
-  export { handler as GET, handler as POST };
+      })
+  ],
+  pages: {
+      signIn: '/login'
+  },
+  callbacks: {
+      async jwt({token, user}){
+          if(user){
+              token.accessToken = user.accessToken
+              token._id = user._id
+          }
+
+          return token
+      },
+      async session({session, token}){
+          if(token){
+              session.user._id = token._id
+              session.user.accessToken = token.accessToken
+          }
+
+          return session
+      }
+  }
+})
+
+export {handler as GET, handler as POST}

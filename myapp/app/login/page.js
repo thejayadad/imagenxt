@@ -1,71 +1,59 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { getProviders, signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+'use client'
 
-const Login = ({ url }) => {
-    const session = useSession();
-    const router = useRouter();
-    const params = useSearchParams();
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { signIn } from 'next-auth/react'
+
+
+
+const Login = () => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const router = useRouter()
+
   
-    useEffect(() => {
-      setError(params.get("error"));
-      setSuccess(params.get("success"));
-    }, [params]);
-  
-    if (session.status === "loading") {
-      return <p>Loading...</p>;
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (password === '' || email === '') {
+        toast.error("Fill all fields!")
+        return
     }
-  
-    if (session.status === "authenticated") {
-      router?.push("/");
+
+    if (password.length < 6) {
+        toast.error("Password must be at least 6 characters long")
+        return
     }
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      const email = e.target[0].value;
-      const password = e.target[1].value;
-  
-      signIn("credentials", {
-        email,
-        password,
-      });
-    };
+
+    try {
+        const res = await signIn('credentials', { email, password, redirect: false })
+
+        if (res?.error == null) {
+            router.push("/")
+        } else {
+            toast.error("Error occured while logging")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
   
     return (
-      <div>
-        <h1 >{success ? success : "Welcome Back"}</h1>
-        <h2>Please sign in to see the dashboard.</h2>
-  
-        <form onSubmit={handleSubmit} >
-          <input
-            type="text"
-            placeholder="Email"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            required
-          />
-          <button>Login</button>
-          {error && error}
-        </form>
-        <button
-          onClick={() => {
-            signIn("google");
-          }}
-        >
-          Login with Google
-        </button>
-        <span >- OR -</span>
-        <Link href="/register">
-          Create new account
-        </Link>
-      </div>
+      <section>
+                  <form onSubmit={handleSubmit}>
+                    <input type="email" placeholder='Email...' onChange={(e) => setEmail(e.target.value)} />
+                    <input type="password" placeholder='Password...' onChange={(e) => setPassword(e.target.value)} />
+                    <button>Log in</button>
+                    <Link href='/register'>
+                        Don&apos;t have an account? <br /> Register now.
+                    </Link>
+                </form>
+                <ToastContainer />
+
+      </section>
     );
   };
   

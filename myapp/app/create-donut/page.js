@@ -1,9 +1,10 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+'use client'
+
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 import { AiOutlineFileImage } from 'react-icons/ai'
+import { ToastContainer, toast } from 'react-toastify'
+import { useSession } from 'next-auth/react'
 
 
 
@@ -12,44 +13,55 @@ const CreateDonut = () => {
     const CLOUD_NAME = 'socialsite'
     const UPLOAD_PRESET = 'donut_shop'
     const [title, setTitle] = useState('')
-    const [img, setImg] = useState('')
-    const session = useSession();
-    const router = useRouter();
-    if (session.status === "loading") {
-        return <p>Loading...</p>;
-      }
+    const [photo, setPhoto] = useState('')
+
     
-      if (session.status === "unauthenticated") {
-        router?.push("/login");
-      }
+    const { data: session, status } = useSession()
+    const router = useRouter()
 
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        try {
-            const img = await uploadImage()
-          
-            const res = await fetch(`http://localhost:3000/api/donut`, {
-              headers: {
-                 'Content-Type': 'application/json',
-                 'Authorization': `Bearer ${session?.user?.accessToken}` 
-              },
-              method: 'POST',
-              body: JSON.stringify({title,img, username: session.data.user.name})
-            })
-  
-            if(!res.ok){
-              throw new Error("Error occured")
-            }  
-            const donut = await res.json()
-  
-            router.push('/')
-        } catch (err) {
-          console.log(err);
+    if (status === 'loading') {
+        return <p>Loading...</p>
+    }
+
+    if (status === 'unauthenticated') {
+        return <p className={classes.accessDenied}>
+            Access Denied
+        </p>
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if(!photo || !title ){
+            toast.error("All fields are required")
+            return
         }
-      };
-      const uploadImage = async () => {
+
+        try {
+          const imageUrl = await uploadImage()
+          
+          const res = await fetch(`http://localhost:3000/api/donut`, {
+            headers: {
+               'Content-Type': 'application/json',
+               'Authorization': `Bearer ${session?.user?.accessToken}` 
+            },
+            method: 'POST',
+            body: JSON.stringify({title,imageUrl,username: session?.user?.name})
+          })
+
+          if(!res.ok){
+            throw new Error("Error occured")
+          }
+
+          const donut = await res.json()
+
+          router.push('/')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const uploadImage = async () => {
         if (!photo) return
 
         const formData = new FormData()
@@ -72,19 +84,20 @@ const CreateDonut = () => {
             console.log(error)
         }
     }
-  return (
-    <section>
-        <h2>Create Post</h2>
-        <form onSubmit={handleSubmit}>
-                    <input type="text" placeholder='Title...' onChange={(e) => setTitle(e.target.value)} />       
-                    <label htmlFor='image'>
+
+    
+    return (
+        <section>
+           <form onSubmit={handleSubmit}>
+                    <input type="text" placeholder='Title...' onChange={(e) => setTitle(e.target.value)} />
+                   <label htmlFor='image'>
                         Upload Image <AiOutlineFileImage />
                     </label>
-                    <input id='image' type="file" style={{ display: 'none' }} onChange={(e) => setImg(e.target.files[0])} />
-                  <button type="submit">Create</button>
+                    <input id='image' type="file" style={{ display: 'none' }} onChange={(e) => setPhoto(e.target.files[0])} />
+                  <button >Create</button>
                 </form>
-    </section>
-  )
+        </section>
+    )
 }
 
 export default CreateDonut
