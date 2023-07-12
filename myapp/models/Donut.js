@@ -1,35 +1,24 @@
 import mongoose from "mongoose";
 
-const DonutSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-        min: 4
-    },
-    imageUrl: {
-        type: String,
-        required: true,
-    },
-    category: {
-        type: String,
-        required: true,
-        enum: [
-            'Custom',
-            'Hot',
-            'Creame Filled',
-            'Sprinkle',
-            'Cake Style',
-        ]
-    },
-    authorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    },
-    likes: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "User",
-        default: []
-    }
-}, {timestamps: true})
+const { Schema } = mongoose;
 
-export default mongoose?.models?.Donut || mongoose.model("Donut", DonutSchema)
+const donutSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    img: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+//If the Post collection does not exist create a new one.
+export default mongoose.models.Donut || mongoose.model("Donut", donutSchema);

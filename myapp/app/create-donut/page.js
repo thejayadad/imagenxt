@@ -1,65 +1,55 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+"use client";
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { AiOutlineFileImage } from 'react-icons/ai'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { useSession } from 'next-auth/react'
+
+
 
 
 const CreateDonut = () => {
     const CLOUD_NAME = 'socialsite'
     const UPLOAD_PRESET = 'donut_shop'
     const [title, setTitle] = useState('')
-    const [category, setCategory] = useState("")
-    const [photo, setPhoto] = useState('')
+    const [img, setImg] = useState('')
+    const session = useSession();
+    const router = useRouter();
+    if (session.status === "loading") {
+        return <p>Loading...</p>;
+      }
+    
+      if (session.status === "unauthenticated") {
+        router?.push("/login");
+      }
 
-    const { data: session, status } = useSession()
-    const router = useRouter()
 
-    if (status === 'loading') {
-        return <p>Loading...</p>
-    }
-
-    if (status === 'unauthenticated') {
-        return <p>
-            Access Denied
-        </p>
-    }
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        if(!photo || !title || !category){
-            toast.error("All fields are required")
-            return
-        }
-
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        
         try {
-          const imageUrl = await uploadImage()
+            const img = await uploadImage()
           
-          const res = await fetch(`http://localhost:3000/api/donut`, {
-            headers: {
-               'Content-Type': 'application/json',
-               'Authorization': `Bearer ${session?.user?.accessToken}` 
-            },
-            method: 'POST',
-            body: JSON.stringify({title,category,imageUrl,authorId: session?.user?._id, })
-          })
-
-          if(!res.ok){
-            throw new Error("Error occured")
-          }
-
-          const donut = await res.json()
-
-          router.push('/')
-        } catch (error) {
-            console.log(error)
+            const res = await fetch(`http://localhost:3000/api/donut`, {
+              headers: {
+                 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${session?.user?.accessToken}` 
+              },
+              method: 'POST',
+              body: JSON.stringify({title,img, username: session.data.user.name})
+            })
+  
+            if(!res.ok){
+              throw new Error("Error occured")
+            }  
+            const donut = await res.json()
+  
+            router.push('/')
+        } catch (err) {
+          console.log(err);
         }
-    }
-
-    const uploadImage = async () => {
+      };
+      const uploadImage = async () => {
         if (!photo) return
 
         const formData = new FormData()
@@ -82,28 +72,17 @@ const CreateDonut = () => {
             console.log(error)
         }
     }
-
-
-
   return (
     <section>
-        <h2>Create Donut</h2>
+        <h2>Create Post</h2>
         <form onSubmit={handleSubmit}>
-                    <input type="text" placeholder='Title...' onChange={(e) => setTitle(e.target.value)} />
-                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
-                        <option value="Custom">Custom</option>
-                        <option value="Hot">Hot</option>
-                        <option value="Creame Filled">Creame Filled</option>
-                        <option value="Sprinkle">Sprinkle</option>
-                        <option value="Cake Style">Cake Style</option>
-                    </select>
+                    <input type="text" placeholder='Title...' onChange={(e) => setTitle(e.target.value)} />       
                     <label htmlFor='image'>
                         Upload Image <AiOutlineFileImage />
                     </label>
-                    <input id='image' type="file" style={{ display: 'none' }} onChange={(e) => setPhoto(e.target.files[0])} />
-                  <button type='submit'>Create</button>
+                    <input id='image' type="file" style={{ display: 'none' }} onChange={(e) => setImg(e.target.files[0])} />
+                  <button type="submit">Create</button>
                 </form>
-                <ToastContainer />
     </section>
   )
 }

@@ -1,24 +1,26 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true
+const { Schema } = mongoose;
+
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      unique: true,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      unique: true,
+      required: true,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
-    creator: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Donut"
-    },
-}, {timestamps: true})
+  },
+  { timestamps: true }
+);
 
-export default mongoose?.models?.User || mongoose.model("User", UserSchema)
+//If the User collection does not exist create a new one.
+export default mongoose.models.User || mongoose.model("User", userSchema);

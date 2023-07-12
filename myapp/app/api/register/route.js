@@ -1,27 +1,29 @@
+import User from "@/models/User";
+import bcrypt from 'bcryptjs'
 import db from "@/lib/db";
-import bcrypt from 'bcrypt'
-import User from '@/models/User'
+import { NextResponse } from "next/server";
 
-export async function POST(req){
+export const POST = async (request) => {
+    const { name, email, password } = await request.json();
+  
+    await db.connect();
+  
+    const hashedPassword = await bcrypt.hash(password, 5);
+  
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+  
     try {
-        await db.connect()
-
-        const {username, email, password: pass} = await req.json()
-
-        const isExisting = await User.findOne({email})
-
-        if(isExisting){
-            throw new Error("User already exists")
-        }
-
-        const hashedPassword = await bcrypt.hash(pass, 10)
-
-        const newUser = await User.create({username, email, password: hashedPassword})
-
-        const {password, ...user} = newUser._doc
-
-        return new Response(JSON.stringify(user), {status: 201})
-    } catch (error) {
-        return new Response(JSON.stringify(error.message), {status: 500})
+      await newUser.save();
+      return new NextResponse("User has been created", {
+        status: 201,
+      });
+    } catch (err) {
+      return new NextResponse(err.message, {
+        status: 500,
+      });
     }
-}
+  };
