@@ -18,6 +18,12 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    donuts: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Donut",
+      default: []
+  }
+
   },
   { timestamps: true }
 );
