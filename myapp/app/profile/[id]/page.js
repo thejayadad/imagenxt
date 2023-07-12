@@ -10,15 +10,23 @@ const ProfilePage = ({params}) => {
 
   useEffect(() => {
     const fetchDonuts = async () => {
-      const response = await fetch(`http://localhost:3000/api/user/${params.id}`);
+      try {
+        const response = await fetch(`http://localhost:3000/api/user/${params.id}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch donuts");
+      }
       const data = await response.json();
+      setUserDonut(data);
+      } catch (error) {
+        console.log(error);
+       
+      }
       
 
-      setUserDonut(data);
     };
 
     if (session?.user.id) fetchDonuts();
-  });
+  }, []);
   console.log(userDonut); // Check the fetched donut data in the console
 
 

@@ -6,7 +6,7 @@ export const GET = async (request, { params }) => {
     try {
       await db.connect();
   
-      const userDonuts = await Prompt.find({ username: params.id }).sort({
+      const userDonuts = await Donut.find({ username: params.id }).sort({
         createAt: -1,
       });  
       return new Response(JSON.stringify(userDonuts), { status: 200 });
