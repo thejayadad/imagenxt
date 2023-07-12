@@ -4,6 +4,18 @@ import db from "@/lib/db";
 import { verifyJwtToken, verifyToken } from '@/lib/jwt'
 
 
+
+export async function GET(req) {
+    await db.connect()
+
+    try {
+        const blogs = await Donut.find({}).populate("username")
+        return new Response(JSON.stringify(blogs), { status: 200 })
+    } catch (error) {
+        return new Response(JSON.stringify(null), { status: 500 })
+    }
+}
+
 export async function POST(req) {
   await db.connect()
 
